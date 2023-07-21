@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class BookController {
@@ -19,33 +20,60 @@ public class BookController {
     private BookService bookService;
 
 //    @RequestMapping(value = "/books", method = RequestMethod.GET)
+
+
     @GetMapping(value = "/books")
-    public List<Book> getBooks() {
-        return this.bookService.getAllBooks();
+    public ResponseEntity<List<Book>> getBooks() {
+        List<Book> list = this.bookService.getAllBooks();
+        if (list.size() <= 0) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.of(Optional.of(list));
     }
 
     @GetMapping(value = "/books/{id}")
-    public Book getBookById(@PathVariable("id") int id) {
-        return bookService.getBookById(id);
+    public ResponseEntity<Book> getBookById(@PathVariable("id") int id) {
+        Book book = bookService.getBookById(id);
+        if (book == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.of(Optional.of(book));
     }
 
     @PostMapping(value = "/books")
-    public Book addBook(@RequestBody Book book) {
-        Book b = this.bookService.addBook(book);
-        System.out.println(b);
-        return b;
+    public ResponseEntity<Book> addBook(@RequestBody Book book) {
+        Book b = null;
+        try{
+            b = this.bookService.addBook(book);
+            System.out.println(b);
+            return ResponseEntity.of(Optional.of(b));
+        }catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @DeleteMapping("/books/{bookId}")
-    public void deleteBook(@PathVariable("bookId") int bookId) {
-         this.bookService.deleteBook(bookId);
-        System.out.println("The record of the book has been deleted");
+    public ResponseEntity<Void> deleteBook(@PathVariable("bookId") int bookId) {
+        try{
+            this.bookService.deleteBook(bookId);
+            System.out.println("The record of the book has been deleted");
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @PutMapping("/books/{bookId}")
-    public Book updateBook(@RequestBody Book book, @PathVariable("bookId") int bookId) {
-        this.bookService.updateBook(book, bookId);
-        return book;
+    public ResponseEntity<Book> updateBook(@RequestBody Book book, @PathVariable("bookId") int bookId) {
+        try{
+            Book b = this.bookService.updateBook(book, bookId);
+            return ResponseEntity.ok().body(b);
+        }catch(Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
 //    @PutMapping("/books/{bookId}")

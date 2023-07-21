@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,14 +22,18 @@ public class BookService {
     }
     public Book getBookById(int id) {
         Book book = null;
-        for (Book b : list) {
-            if (b.getId() == id) {
-                book = b;
-                break;
+        try{
+            for (Book b : list) {
+                if (b.getId() == id) {
+                    book = b;
+                    break;
+                }
+                else {
+                    return null;
+                }
             }
-            else {
-                return null;
-            }
+        } catch(NoSuchElementException e) {
+            e.printStackTrace();
         }
         return book;
     }
@@ -75,7 +80,7 @@ public class BookService {
 //        return book;
 //    }
 
-    public void updateBook(Book book, int bookId) {
+    public Book updateBook(Book book, int bookId) {
         list = list.stream().map(e -> {
             if (e.getId() == bookId) {
                 e.setTitle(book.getTitle());
@@ -83,6 +88,8 @@ public class BookService {
             }
             return e;
         }).collect(Collectors.toList());
+
+        return book;
     }
 
 
