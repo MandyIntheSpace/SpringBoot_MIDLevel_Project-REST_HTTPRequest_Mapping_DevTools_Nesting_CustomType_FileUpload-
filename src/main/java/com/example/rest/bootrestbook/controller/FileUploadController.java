@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
 public class FileUploadController {
@@ -21,6 +22,8 @@ public class FileUploadController {
 //        System.out.println(file.getContentType());
 //        System.out.println(file.getName());
 
+        //This is static file uploading
+
         try {
             if (file.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Request must contain file");
@@ -30,7 +33,8 @@ public class FileUploadController {
             }
             boolean newFile = fileUploadHelper.fileUploadChecker(file);
             if(newFile) {
-                return ResponseEntity.ok("File is successfully uploaded as it is JEPG image type");
+//                return ResponseEntity.ok("File is successfully uploaded as it is JEPG image type");
+                return ResponseEntity.ok(ServletUriComponentsBuilder.fromCurrentContextPath().path("/image/").path(file.getOriginalFilename()).toUriString());
             }
         } catch (Exception e) {
             e.printStackTrace();
