@@ -1,11 +1,23 @@
 package com.example.rest.bootrestbook.Model;
+import com.example.rest.bootrestbook.Model.Author;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "spring_REST_HTTP_JPA")
 public class Book {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     private String title;
-    private String author;
 
-    public Book(int id, String title, String author) {
+    @OneToOne(cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private Author author;
+
+    public Book(int id, String title, Author author) {
         this.id = id;
         this.title = title;
         this.author = author;
@@ -29,11 +41,11 @@ public class Book {
         this.title = title;
     }
 
-    public String getAuthor() {
+    public Author getAuthor() {
         return author;
     }
 
-    public void setAuthor(String author) {
+    public void setAuthor(Author author) {
         this.author = author;
     }
 
